@@ -1,31 +1,57 @@
 import * as React from "react"
-import { Link } from "gatsby"
+import { graphql, Link } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
+import PersonSW from "../components/personSW"
+import PersonPage from "./subject"
+import { node } from "prop-types"
 
-const IndexPage = () => (
-  <Layout>
-    <Seo title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <StaticImage
-      src="../images/gatsby-astronaut.png"
-      width={300}
-      quality={95}
-      formats={["auto", "webp", "avif"]}
-      alt="A Gatsby astronaut"
-      style={{ marginBottom: `1.45rem` }}
-    />
-    <p>
-      <Link to="/page-2/">Go to page 2</Link> <br />
-      <Link to="/using-typescript/">Go to "Using TypeScript"</Link> <br />
-      <Link to="/using-ssr">Go to "Using SSR"</Link> <br />
-      <Link to="/using-dsg">Go to "Using DSG"</Link>
-    </p>
-  </Layout>
-)
+const IndexPage = (props) => {
+  const persons = props.data.allStarWarsPersons.edges
+  console.log(props);
+
+  const showInfo = () => {
+    return console.log(persons[1].node.name)
+  }
+
+  return (
+    <div className="bg-main-theme h-screen flex flex-col text-center m-auto">
+      <Layout>
+        <Seo title="Home" />
+        <section className="text-white">
+          <h1 className='text-orange-600'>Persons of Star Wars</h1>
+
+          <div className="flex justify-center">
+            {persons.map((person, i) => {
+              const personData = person.node
+              return (
+                <div key={i} className="w-34 h-34 border-solid bg-sky-500 m-1 rounded-md p-1">
+                  <p>Name: {personData.name}</p>
+                  <PersonSW personData={personData} />
+                  <button onClick={() => showInfo()}>tr</button>
+                </div>
+              )
+            })}
+          </div>
+
+        </section>
+      </Layout>
+    </div>
+  )
+}
 
 export default IndexPage
+
+export const query = graphql`
+query AllStarWarsPersons {
+  allStarWarsPersons {
+    edges {
+      node {      
+        name      
+      }
+    }
+  }
+}
+`;
